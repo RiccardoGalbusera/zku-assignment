@@ -34,7 +34,10 @@ contract Ballot {
     // This modifier checks if the voting period has ended.
     // If it has, it reverts.
     modifier voteEnded() {
-        require(block.timestamp > startTime + 5 minutes);
+        require(
+            block.timestamp <= startTime + 5 minutes,
+            "Vote period has ended"
+        );
         _;
     }
 
@@ -118,7 +121,7 @@ contract Ballot {
 
     /// Give your vote (including votes delegated to you)
     /// to proposal `proposals[proposal].name`.
-    function vote(uint256 proposal) external {
+    function vote(uint256 proposal) external voteEnded {
         Voter storage sender = voters[msg.sender];
         require(sender.weight != 0, "Has no right to vote");
         require(!sender.voted, "Already voted.");
